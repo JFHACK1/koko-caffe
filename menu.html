@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koko Cafe - قائمة الطعام</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         /* أنماط عامة */
         * {
@@ -606,6 +610,34 @@
             background: rgba(255, 255, 255, 0.2);
             transform: rotate(90deg);
         }
+        
+        /* إشعار */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(25, 25, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--primary-color);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #4CAF50;
+        }
+        
+        .notification.error {
+            border-left-color: #F44336;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
@@ -613,6 +645,10 @@
     <div class="blur-circle circle-1"></div>
     <div class="blur-circle circle-2"></div>
     <div class="blur-circle circle-3"></div>
+    
+    <div id="notification" class="notification">
+        <span id="notification-message"></span>
+    </div>
     
     <button class="booking-btn" id="bookingButton">
         <i class="fas fa-calendar-alt"></i>
@@ -684,7 +720,7 @@
                     <div class="menu-item-image">
                         <img src="https://images.pexels.com/photos/15043347/pexels-photo-15043347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="ساندوتش شاورما">
                     </div>
-                    <h3>ساندوتش شاورما</h3>
+                    <h3>ساندوتش شاورma</h3>
                     <p>شاورما لحم أو دجاج مع الثومية والبطاطس والمخللات</p>
                     <div class="price">45 EGP</div>
                 </div>
@@ -758,7 +794,7 @@
                         <img src="https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="موهيتو">
                     </div>
                     <h3>موهيتو</h3>
-                    <p>موهيتو منعش بالنعناع والليمون والسكر البني</p>
+                    <p>موهito منعش بالنعناع والليمون والسكر البني</p>
                     <div class="price">45 EGP</div>
                 </div>
                 
@@ -901,6 +937,13 @@
                     </div>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tableNumber">رقم الطاولة</label>
+                        <input type="number" id="tableNumber" min="1" required>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="specialRequests">طلبات خاصة</label>
                     <textarea id="specialRequests" rows="4"></textarea>
@@ -923,6 +966,21 @@
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcxGOaiiy6Dy1MybOIOxn69xab4rsOOJ0",
+            authDomain: "koko-caffe.firebaseapp.com",
+            projectId: "koko-caffe",
+            storageBucket: "koko-caffe.firebasestorage.app",
+            messagingSenderId: "382318796715",
+            appId: "1:382318796715:web:ee9f3aca9a107f86da7cee",
+            measurementId: "G-B83G77QPWW"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         document.addEventListener('DOMContentLoaded', function() {
             // إخفاء جميع المحتويات في البداية
             const tabContents = document.querySelectorAll('.tab-content');
@@ -973,17 +1031,57 @@
                 bookingForm.style.display = 'none';
             });
             
-            // إرسال نموذج الحجز
+            // إرسال نموذج الحجز إلى Firebase
             const reservationForm = document.getElementById('reservationForm');
             
             reservationForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // هنا يمكنك إضافة كود إرسال البيانات إلى الخادم
-                alert('تم استلام طلب الحجز بنجاح، سنتواصل معك قريباً لتأكيد التفاصيل!');
-                reservationForm.reset();
-                bookingForm.style.display = 'none';
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const eventType = document.getElementById('eventType').value;
+                const guests = document.getElementById('guests').value;
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+                const tableNumber = document.getElementById('tableNumber').value;
+                const specialRequests = document.getElementById('specialRequests').value;
+                
+                // إضافة البيانات إلى Firebase
+                db.collection("reservations").add({
+                    name: name,
+                    phone: phone,
+                    eventType: eventType,
+                    guests: guests,
+                    date: date,
+                    time: time,
+                    tableNumber: tableNumber,
+                    specialRequests: specialRequests,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then((docRef) => {
+                    console.log("Document written with ID: ", docRef.id);
+                    showNotification('تم استلام طلب الحجز بنجاح، سنتواصل معك قريباً لتأكيد التفاصيل!', 'success');
+                    reservationForm.reset();
+                    bookingForm.style.display = 'none';
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                    showNotification('حدث خطأ أثناء إرسال طلب الحجز، يرجى المحاولة مرة أخرى.', 'error');
+                });
             });
+            
+            // وظيفة عرض الإشعارات
+            function showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                const notificationMessage = document.getElementById('notification-message');
+                
+                notificationMessage.textContent = message;
+                notification.className = 'notification show ' + type;
+                
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, 5000);
+            }
             
             // إضافة تأثيرات عند التمرير
             const menuItems = document.querySelectorAll('.menu-item');
