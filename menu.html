@@ -319,6 +319,27 @@
             font-family: 'Playfair Display', serif;
         }
         
+        /* نموذج الطلب */
+        .order-form {
+            background: rgba(25, 25, 25, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 50px auto;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+        
+        .order-form h2 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
         .form-group {
             margin-bottom: 25px;
         }
@@ -539,7 +560,7 @@
                 height: 180px;
             }
             
-            .booking-form {
+            .booking-form, .order-form {
                 padding: 25px;
             }
         }
@@ -563,12 +584,18 @@
             background: linear-gradient(45deg, #ff5252, #ff8a65);
         }
         
-        /* زر الحجز */
-        .booking-btn {
+        /* أزرار الحجز والطلب */
+        .action-buttons {
             position: fixed;
             bottom: 30px;
             left: 30px;
             z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .booking-btn, .order-btn {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
@@ -584,9 +611,18 @@
             gap: 10px;
         }
         
-        .booking-btn:hover {
+        .order-btn {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+        
+        .booking-btn:hover, .order-btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(255, 107, 107, 0.5);
+        }
+        
+        .order-btn:hover {
+            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.5);
         }
         
         .close-form {
@@ -638,6 +674,52 @@
         .notification.error {
             border-left-color: #F44336;
         }
+        
+        /* زر إضافة الطلب */
+        .add-to-order {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 15px;
+        }
+        
+        .add-to-order:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .order-summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .order-summary h3 {
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .order-total {
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
@@ -650,10 +732,16 @@
         <span id="notification-message"></span>
     </div>
     
-    <button class="booking-btn" id="bookingButton">
-        <i class="fas fa-calendar-alt"></i>
-        حجز حفلات وأعياد ميلاد
-    </button>
+    <div class="action-buttons">
+        <button class="booking-btn" id="bookingButton">
+            <i class="fas fa-calendar-alt"></i>
+            حجز حفلات وأعياد ميلاد
+        </button>
+        <button class="order-btn" id="orderButton">
+            <i class="fas fa-utensils"></i>
+            طلب من المنيو
+        </button>
+    </div>
     
     <div class="container">
         <header>
@@ -692,6 +780,9 @@
                         <div>110 EGP</div>
                         <span>كان 150 EGP</span>
                     </div>
+                    <button class="add-to-order" data-name="عرض الدويتو" data-price="110">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
             
@@ -705,6 +796,9 @@
                     <h3>برجر ستيك لحم</h3>
                     <p>برجر لحم مشوي مع الجبنة والصلصة الخاصة والخضروات الطازجة</p>
                     <div class="price">65 EGP</div>
+                    <button class="add-to-order" data-name="برجر ستيك لحم" data-price="65">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -714,15 +808,21 @@
                     <h3>برجر دجاج كريسبي</h3>
                     <p>برجر دجاج مقرمش مع المايونيز والخس والطماطم</p>
                     <div class="price">55 EGP</div>
+                    <button class="add-to-order" data-name="برجر دجاج كريسبي" data-price="55">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
                     <div class="menu-item-image">
                         <img src="https://images.pexels.com/photos/15043347/pexels-photo-15043347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="ساندوتش شاورما">
                     </div>
-                    <h3>ساندوتش شاورma</h3>
+                    <h3>ساندوتش شاورما</h3>
                     <p>شاورما لحم أو دجاج مع الثومية والبطاطس والمخللات</p>
                     <div class="price">45 EGP</div>
+                    <button class="add-to-order" data-name="ساندوتش شاورما" data-price="45">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -732,6 +832,9 @@
                     <h3>ستيك لحم</h3>
                     <p>ستيك لحم مشوي مع الأرز والخضروات والصلصة الخاصة</p>
                     <div class="price">120 EGP</div>
+                    <button class="add-to-order" data-name="ستيك لحم" data-price="120">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
             
@@ -745,6 +848,9 @@
                     <h3>بطاطس فراي</h3>
                     <p>بطاطس مقلية مقرمشة مع الصلصة الخاصة والكاتشب</p>
                     <div class="price">25 EGP</div>
+                    <button class="add-to-order" data-name="بطاطس فراي" data-price="25">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -754,6 +860,9 @@
                     <h3>حلقات البصل</h3>
                     <p>حلقات بصل مقلية مع صلصة الباربكيو والمايونيز</p>
                     <div class="price">30 EGP</div>
+                    <button class="add-to-order" data-name="حلقات البصل" data-price="30">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -763,6 +872,9 @@
                     <h3>جبنة مشوية</h3>
                     <p>جبنة موتزاريلا مشوية مع الصلصة والزعتر</p>
                     <div class="price">35 EGP</div>
+                    <button class="add-to-order" data-name="جبنة مشوية" data-price="35">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
         </div>
@@ -778,6 +890,9 @@
                     <h3>أسموزي بطيخ</h3>
                     <p>مشروب البطيخ المنعش مع النعناع والليمون</p>
                     <div class="price">60 EGP</div>
+                    <button class="add-to-order" data-name="أسموزي بطيخ" data-price="60">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -787,6 +902,9 @@
                     <h3>أسموزي فراولة</h3>
                     <p>مشروب الفراولة الطازج مع الموز والحليب</p>
                     <div class="price">55 EGP</div>
+                    <button class="add-to-order" data-name="أسموزي فراولة" data-price="55">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -794,17 +912,23 @@
                         <img src="https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="موهيتو">
                     </div>
                     <h3>موهيتو</h3>
-                    <p>موهito منعش بالنعناع والليمون والسكر البني</p>
+                    <p>موهيتو منعش بالنعناع والليمون والسكر البني</p>
                     <div class="price">45 EGP</div>
+                    <button class="add-to-order" data-name="موهيتو" data-price="45">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
                     <div class="menu-item-image">
                         <img src="https://images.pexels.com/photos/6157057/pexels-photo-6157057.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="عصير برتقال">
                     </div>
-                    <h3>عصير برتقال طازج</h3>
+                    <h3>عspير برتقال طازج</h3>
                     <p>عصير برتقال طازج مع القليل من السكر والثلج</p>
                     <div class="price">35 EGP</div>
+                    <button class="add-to-order" data-name="عصير برتقال طازج" data-price="35">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
             
@@ -818,6 +942,9 @@
                     <h3>قهوة تركية</h3>
                     <p>قهوة تركية أصيلة برائحة الهيل والبهارات</p>
                     <div class="price">30 EGP</div>
+                    <button class="add-to-order" data-name="قهوة تركية" data-price="30">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -827,6 +954,9 @@
                     <h3>كابتشينو</h3>
                     <p>كابتشينو إيطالي مع رغوة الحليب والبودرة</p>
                     <div class="price">40 EGP</div>
+                    <button class="add-to-order" data-name="كابتشينو" data-price="40">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -836,6 +966,9 @@
                     <h3>شاي</h3>
                     <p>شاي ساخن مع النعناع أو بدون حسب الرغبة</p>
                     <div class="price">20 EGP</div>
+                    <button class="add-to-order" data-name="شاي" data-price="20">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -845,6 +978,9 @@
                     <h3>شوكولاتة ساخنة</h3>
                     <p>شوكولاتة ساخنة غنية مع الكريمة والمكسرات</p>
                     <div class="price">45 EGP</div>
+                    <button class="add-to-order" data-name="شوكولاتة ساخنة" data-price="45">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
         </div>
@@ -860,6 +996,9 @@
                     <h3>شيشة تفاح</h3>
                     <p>شيشة بنكهة التفاح المميزة والمنعشة</p>
                     <div class="price">70 EGP</div>
+                    <button class="add-to-order" data-name="شيشة تفاح" data-price="70">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -869,6 +1008,9 @@
                     <h3>شيشة عنب</h3>
                     <p>شيشة بنكهة العنب المنعشة والحلوة</p>
                     <div class="price">70 EGP</div>
+                    <button class="add-to-order" data-name="شيشة عنب" data-price="70">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -878,6 +1020,9 @@
                     <h3>شيشة فراولة</h3>
                     <p>شيشة بنكهة الفراولة الحلوة واللذيذة</p>
                     <div class="price">70 EGP</div>
+                    <button class="add-to-order" data-name="شيشة فراولة" data-price="70">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
                 
                 <div class="menu-item">
@@ -887,13 +1032,16 @@
                     <h3>شيشة مميزة</h3>
                     <p>خليط من النكهات المميزة والحصرية</p>
                     <div class="price">85 EGP</div>
+                    <button class="add-to-order" data-name="شيشة مميزة" data-price="85">
+                        <i class="fas fa-plus"></i> إضافة إلى الطلب
+                    </button>
                 </div>
             </div>
         </div>
         
         <!-- نموذج الحجز -->
         <div class="booking-form" id="bookingForm">
-            <button class="close-form" id="closeForm">
+            <button class="close-form" id="closeBookingForm">
                 <i class="fas fa-times"></i>
             </button>
             <h2>حجز حفلات وأعياد ميلاد</h2>
@@ -953,6 +1101,40 @@
             </form>
         </div>
         
+        <!-- نموذج الطلب -->
+        <div class="order-form" id="orderForm">
+            <button class="close-form" id="closeOrderForm">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>طلب من المنيو</h2>
+            
+            <div class="order-summary" id="orderSummary">
+                <h3>طلباتك</h3>
+                <div id="orderItems"></div>
+                <div class="order-total" id="orderTotal">المجموع: 0 EGP</div>
+            </div>
+            
+            <form id="orderSubmitForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderTableNumber">رقم الطاولة</label>
+                        <input type="number" id="orderTableNumber" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderName">الاسم (اختياري)</label>
+                        <input type="text" id="orderName">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="orderNotes">ملاحظات على الطلب</label>
+                    <textarea id="orderNotes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">تأكيد الطلب</button>
+            </form>
+        </div>
+        
         <footer>
             <p>© 2023 Koko Cafe - جميع الحقوق محفوظة</p>
             <p>هاتف: 0123456789 | عنوان: شارع الكورنيش، الإسكندرية</p>
@@ -970,6 +1152,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyCcxGOaiiy6Dy1MybOIOxn69xab4rsOOJ0",
             authDomain: "koko-caffe.firebaseapp.com",
+            databaseURL: "https://koko-caffe-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "koko-caffe",
             storageBucket: "koko-caffe.firebasestorage.app",
             messagingSenderId: "382318796715",
@@ -980,6 +1163,11 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        // Telegram bot configuration
+        const TELEGRAM_BOT_TOKEN_ORDERS = '8369625605:AAEtXtWFiXhRZpxnkPmtz6Iu1k_WNG_XGdo';
+        const TELEGRAM_BOT_TOKEN_RESERVATIONS = '8483230981:AAE_8X1SHvxcU_bHkg8zV0QftNRLbdabDtE';
+        const TELEGRAM_CHAT_ID = '6271337642';
 
         document.addEventListener('DOMContentLoaded', function() {
             // إخفاء جميع المحتويات في البداية
@@ -1017,7 +1205,7 @@
             // إظهار وإخفاء نموذج الحجز
             const bookingButton = document.getElementById('bookingButton');
             const bookingForm = document.getElementById('bookingForm');
-            const closeForm = document.getElementById('closeForm');
+            const closeBookingForm = document.getElementById('closeBookingForm');
             
             bookingButton.addEventListener('click', () => {
                 bookingForm.style.display = 'block';
@@ -1027,11 +1215,28 @@
                 });
             });
             
-            closeForm.addEventListener('click', () => {
+            closeBookingForm.addEventListener('click', () => {
                 bookingForm.style.display = 'none';
             });
             
-            // إرسال نموذج الحجز إلى Firebase
+            // إظهار وإخفاء نموذج الطلب
+            const orderButton = document.getElementById('orderButton');
+            const orderForm = document.getElementById('orderForm');
+            const closeOrderForm = document.getElementById('closeOrderForm');
+            
+            orderButton.addEventListener('click', () => {
+                orderForm.style.display = 'block';
+                window.scrollTo({
+                    top: orderForm.offsetTop - 50,
+                    behavior: 'smooth'
+                });
+            });
+            
+            closeOrderForm.addEventListener('click', () => {
+                orderForm.style.display = 'none';
+            });
+            
+            // إرسال نموذج الحجز إلى Firebase وTelegram
             const reservationForm = document.getElementById('reservationForm');
             
             reservationForm.addEventListener('submit', function(e) {
@@ -1060,6 +1265,20 @@
                 })
                 .then((docRef) => {
                     console.log("Document written with ID: ", docRef.id);
+                    
+                    // إرسال الإشعار إلى Telegram
+                    const message = `🎉 *حجز جديد* 🎉
+الاسم: ${name}
+الهاتف: ${phone}
+نوع المناسبة: ${eventType}
+عدد الأشخاص: ${guests}
+التاريخ: ${date}
+الوقت: ${time}
+رقم الطاولة: ${tableNumber}
+الطلبات الخاصة: ${specialRequests || 'لا يوجد'}`;
+                    
+                    sendTelegramMessage(TELEGRAM_BOT_TOKEN_RESERVATIONS, TELEGRAM_CHAT_ID, message);
+                    
                     showNotification('تم استلام طلب الحجز بنجاح، سنتواصل معك قريباً لتأكيد التفاصيل!', 'success');
                     reservationForm.reset();
                     bookingForm.style.display = 'none';
@@ -1069,6 +1288,170 @@
                     showNotification('حدث خطأ أثناء إرسال طلب الحجز، يرجى المحاولة مرة أخرى.', 'error');
                 });
             });
+            
+            // نظام إدارة الطلبات
+            let currentOrder = [];
+            const orderSummary = document.getElementById('orderSummary');
+            const orderItems = document.getElementById('orderItems');
+            const orderTotal = document.getElementById('orderTotal');
+            const addToOrderButtons = document.querySelectorAll('.add-to-order');
+            
+            addToOrderButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const name = button.getAttribute('data-name');
+                    const price = parseFloat(button.getAttribute('data-price'));
+                    
+                    // التحقق إذا كان العنصر موجود بالفعل في الطلب
+                    const existingItemIndex = currentOrder.findIndex(item => item.name === name);
+                    
+                    if (existingItemIndex !== -1) {
+                        // زيادة الكمية إذا كان العنصر موجود
+                        currentOrder[existingItemIndex].quantity += 1;
+                    } else {
+                        // إضافة عنصر جديد
+                        currentOrder.push({
+                            name: name,
+                            price: price,
+                            quantity: 1
+                        });
+                    }
+                    
+                    updateOrderSummary();
+                    orderSummary.style.display = 'block';
+                });
+            });
+            
+            function updateOrderSummary() {
+                orderItems.innerHTML = '';
+                let total = 0;
+                
+                currentOrder.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    
+                    const orderItemElement = document.createElement('div');
+                    orderItemElement.className = 'order-item';
+                    orderItemElement.innerHTML = `
+                        <div>
+                            <span>${item.name}</span>
+                            <span>${item.price} EGP x ${item.quantity}</span>
+                        </div>
+                        <div>
+                            <span>${itemTotal} EGP</span>
+                            <button class="remove-item" data-index="${index}" style="background: none; border: none; color: #ff6b6b; cursor: pointer; margin-right: 10px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    orderItems.appendChild(orderItemElement);
+                });
+                
+                orderTotal.textContent = `المجموع: ${total} EGP`;
+                
+                // إضافة مستمعي الأحداث لأزرار الحذف
+                document.querySelectorAll('.remove-item').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.getAttribute('data-index'));
+                        currentOrder.splice(index, 1);
+                        updateOrderSummary();
+                        
+                        if (currentOrder.length === 0) {
+                            orderSummary.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+            // إرسال نموذج الطلب إلى Firebase وTelegram
+            const orderSubmitForm = document.getElementById('orderSubmitForm');
+            
+            orderSubmitForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (currentOrder.length === 0) {
+                    showNotification('يرجى إضافة عناصر إلى الطلب أولاً', 'error');
+                    return;
+                }
+                
+                const tableNumber = document.getElementById('orderTableNumber').value;
+                const name = document.getElementById('orderName').value || 'زائر';
+                const notes = document.getElementById('orderNotes').value;
+                
+                // حساب المجموع
+                let total = 0;
+                currentOrder.forEach(item => {
+                    total += item.price * item.quantity;
+                });
+                
+                // إضافة البيانات إلى Firebase
+                db.collection("orders").add({
+                    tableNumber: tableNumber,
+                    customerName: name,
+                    items: currentOrder,
+                    total: total,
+                    notes: notes,
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then((docRef) => {
+                    console.log("Order written with ID: ", docRef.id);
+                    
+                    // إرسال الإشعار إلى Telegram
+                    let message = `📋 *طلب جديد* 📋
+رقم الطاولة: ${tableNumber}
+الاسم: ${name}
+الوقت: ${new Date().toLocaleString('ar-EG')}
+
+*الطلبات:*`;
+                    
+                    currentOrder.forEach(item => {
+                        message += `\n- ${item.name} x${item.quantity} - ${item.price * item.quantity} EGP`;
+                    });
+                    
+                    message += `\n\n*المجموع: ${total} EGP*`;
+                    
+                    if (notes) {
+                        message += `\n\n*ملاحظات:* ${notes}`;
+                    }
+                    
+                    sendTelegramMessage(TELEGRAM_BOT_TOKEN_ORDERS, TELEGRAM_CHAT_ID, message);
+                    
+                    showNotification('تم استلام طلبك بنجاح، سيتم تجهيزه قريباً!', 'success');
+                    orderSubmitForm.reset();
+                    currentOrder = [];
+                    orderSummary.style.display = 'none';
+                    orderForm.style.display = 'none';
+                })
+                .catch((error) => {
+                    console.error("Error adding order: ", error);
+                    showNotification('حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.', 'error');
+                });
+            });
+            
+            // وظيفة إرسال رسالة إلى Telegram
+            function sendTelegramMessage(botToken, chatId, message) {
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Message sent to Telegram:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending message to Telegram:', error);
+                });
+            }
             
             // وظيفة عرض الإشعارات
             function showNotification(message, type) {
